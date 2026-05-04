@@ -170,36 +170,52 @@ def run_job(job_name, node_type, cores, n_threads, worker_id):
 
 # -------------------------------------------------------------------
 
-# EVOLVE-BLOCK-START
-WORKER_CONFIG = [
-    {"initial": "parsec-freqmine", "node": "node-a-8core", "cores": "0-3", "threads": 4},
-    {"initial": "parsec-streamcluster", "node": "node-a-8core", "cores": "4-7", "threads": 4},
-    {"initial": "parsec-canneal", "node": "node-b-4core", "cores": "2-3", "threads": 2}
-]
 
-QUEUE_JOBS = ["parsec-blackscholes", "parsec-vips", "parsec-barnes", "parsec-radix"]
-
-def worker(worker_cfg, queue):
-    
+def worker(worker_cfg):
+        
     w_id = worker_cfg['id']
     node = worker_cfg['node']
     cores = worker_cfg['cores']
     threads = worker_cfg['threads']
 
-    # 1. Run the initial assigned job
-    if worker_cfg.get('initial'):
-        run_job(worker_cfg['initial'], node, cores, threads, w_id)
+    for job in worker_cfg['jobs']:
+        run_job("parsec-" + job, node, cores, threads, w_id)
 
-    # 2. Consume from the shared pool
-    while not queue.empty():
-        try:
-            job_name = queue.get_nowait()
-            run_job(job_name, node, cores, threads, w_id)
-            queue.task_done()
-        except:
-            break
-    
     print(f"[worker-{w_id}] Exiting.")
+
+# EVOLVE-BLOCK-START
+class Scheduler:
+    """ Jobs we have to run:
+    [
+    "freqmine", "streamcluster", "canneal", "blackscholes", "vips", "barnes", "radix"
+    ]
+
+    Cores we have available:
+    - node-a-8core: cores 0-7
+    - node-b-4core: cores 0-2 (3 is reserved for memcached)
+
+    """
+    def __init__(self):
+        self.job_queue = Queue()
+
+        self.worker_config = [
+            {"node": "node-a-8core", "cores": "0-3", "threads": 4, "jobs": ["freqmine", "barnes", "blackscholes"]},
+            {"node": "node-a-8core", "cores": "4-7", "threads": 4, "jobs": ["streamcluster", "radix"]},
+            {"node": "node-b-4core", "cores": "0-2", "threads": 3, "jobs": ["canneal", "vips"]},
+        ]
+
+    def run(self):
+        threads = []
+        for idx, w_params in enumerate(self.worker_config):
+            w_params['id'] = idx
+            t = threading.Thread(target=self.worker, args=(w_params,))
+            t.start()
+            threads.append(t)
+
+        for t in threads:
+            t.join()
+
+# EVOLVE-BLOCK-END
 
 if __name__ == "__main__":
 
@@ -209,26 +225,12 @@ if __name__ == "__main__":
         pass
     os.makedirs(OUTDIR, exist_ok=True)
 
-    subprocess.run(["kubectl", "delete", "jobs", "--all"])
+    subprocess.run(["kubectl", "delete", "jobs", "--all"]) 
 
     for RUN_ID in range(1, 4):
-        job_queue = Queue()
-
-        # These are the 'extra' jobs to be load-balanced
-        for job in QUEUE_JOBS:
-            job_queue.put(job)
-
-        threads = []
-        for idx, w_params in enumerate(WORKER_CONFIG):
-            # Ensure ID is set
-            w_params['id'] = idx
-            t = threading.Thread(target=worker, args=(w_params, job_queue))
-            t.start()
-            threads.append(t)
-
-        for t in threads:
-            t.join()
-# EVOLVE-BLOCK-END
+        
+        Scheduler().run()
+        
         # 4. Final timing dump
         print("All jobs done. Saving results...")
         

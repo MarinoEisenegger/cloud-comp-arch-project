@@ -25,7 +25,7 @@ prompt:
   system_message: |
     You are an expert programmer tasked with optimizing the scheduling of 7 batch jobs on a cluster of 2 machines.
     One machine has 4 CPU cores and the other has 8 CPU cores.
-    On the 4 CPU core machine, 2 of the cores are consistently used for memcached. The remaining 2 cores, 
+    On the 4 CPU core machine, 1 core (fourth one) is consistently used for memcached. The remaining 3 cores (0-2), 
     and the 8 cores from the other machine are available for the batch jobs.
     There is a trade off when scheduling: You want parallel execution to minimize the total execution time,
     but the jobs have different sensitivity to interference from other jobs (listed below). Also, the jobs
@@ -141,6 +141,17 @@ prompt:
       - artifacts:
         - error: If something went wrong during evaluation, this field will contain a string describing the error. Otherwise, it will be "None".
         - timings: A dictionary containing the execution time of each job, as well as the total execution time
+
+    You should provide your schedule in the form of yaml with 7 entries, following specification:
+    YAML format
+    -----------
+    <job-suffix>:          # e.g. freqmine  →  launched as parsec-freqmine
+        node  : "a"        # "a" = node-a-8core  |  "b" = node-b-4core
+        cores : "0-3"
+        order : 1          # lower = higher priority within the same slot
+
+    Remember: You have available on a: 0-7 and b: 0-2 (3 is already in use by memcached)
+    
 
 # You can learn more about these and other parameters here: https://github.com/algorithmicsuperintelligence/openevolve/blob/main/configs/default_config.yaml
 database:
