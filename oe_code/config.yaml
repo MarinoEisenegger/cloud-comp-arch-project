@@ -23,37 +23,29 @@ prompt:
   #
   # The system message will be the content of the file <path-to-prompt-directory>/name_of_file.txt
   system_message: |
-    You are an expert programmer tasked with optimizing the scheduling of 7 batch jobs 
+    You are an expert programmer tasked with optimizing the scheduling of 7 batch jobs
     on a cluster of 2 machines:
       - Machine a: 8 CPU cores (cores 0-7), all available for batch jobs
-      - Machine b: 4 CPU cores (cores 0-3), where core 3 is permanently reserved 
+      - Machine b: 4 CPU cores (cores 0-3), where core 3 is permanently reserved
         for memcached — only cores 0-2 are available for batch jobs
 
     OBJECTIVE
     ---------
-    Minimize total wall-clock execution time (score improves as time drops below 
+    Minimize total wall-clock execution time (score improves as time drops below
     6 minutes), while keeping the 95th percentile memcached tail latency below 1ms.
-    Since memcached runs on machine b, avoid scheduling high-interference or 
+    Since memcached runs on machine b, avoid scheduling high-interference or
     memory-bandwidth-heavy jobs there.
 
     CONSTRAINTS
     -----------
     - Jobs pinned to N cores must use exactly N threads.
-    - Jobs within a partition run sequentially; partitions across the cluster run 
+    - Jobs within a partition run sequentially; partitions across the cluster run
       in parallel.
     - Do not exceed available cores per machine (8 on a, 3 on b).
-    - WARNING: Some job combinations cause timeouts (e.g. due to memory 
-      constraints). Always check the `error` field in evaluation results first. 
+    - Core ranges on the same machine must not overlap.
+    - WARNING: Some job combinations cause timeouts (e.g. due to memory
+      constraints). Always check the `error` field in evaluation results first.
       A timeout scores 0.
-
-    INTERFERENCE NOTES
-    ------------------
-    The interference multipliers below reflect slowdown when a job co-executes 
-    with a stressor of that type. When two jobs share a machine, assume the 
-    dominant shared resource is LLC (last-level cache) and memBW (memory bandwidth).
-    Prefer pairing jobs with low LLC and memBW sensitivity together.
-    Jobs with high memBW interference are especially risky on machine b 
-    (they degrade memcached latency).
 
     JOB DATA
     --------
@@ -85,39 +77,68 @@ prompt:
       Threads → seconds: 1→105, 2→71 (1.48x), 4→41 (2.56x), 8→24 (4.38x)
       Interference:  cpu:1.72  l1d:1.85  l1i:1.80  l2:1.70  llc:1.89  memBW:1.84
 
+    INTERFERENCE NOTES
+    ------------------
+    When two jobs share a machine, the dominant shared resources are LLC and memBW.
+    Prefer pairing jobs with low LLC and memBW sensitivity together.
+    Jobs with high memBW interference are especially risky on machine b
+    (they degrade memcached latency). Avoid Streamcluster and Vips on machine b.
+    Canneal has relatively low interference — safer for machine b if needed.
+
     EVALUATION FEEDBACK
     -------------------
     You will receive:
-      - combined_score: float in [0,1], computed as max(0, 360 - total_time) / 360
-                        Every second of total execution time saved = +0.00278 score.
-                        Score is 0 if tail latency exceeds 1000 µs at any point.
-      - tail_latency:   Worst-case p95 memcached latency in microseconds across all 
-                        measurement windows. Must stay below 1000 µs (= 1ms).
-      - error:          String or null — ALWAYS check this first on any bad result.
-                        The hard execution timeout is 360 seconds; anything exceeding 
-                        that scores 0 with error "Timed out after 6 minutes".
-      - timings:        Per-job and total execution times from timings_1.txt
+      - combined_score: float in [0,1], max(0, 360 - total_time) / 360
+                        Every second saved = +0.00278 score.
+                        Score is ZERO if tail latency exceeds 1000 µs at any point.
+      - tail_latency:   Worst-case p95 memcached latency in microseconds.
+      - error:          ALWAYS check this first. "Timed out after 6 minutes" = 0.
+      - timings:        Per-job and total execution times.
 
-    CURRENT BEST SCHEDULE (use as baseline, improve upon it)
-    ---------------------------------------------------------
+    CURRENT BEST SCHEDULE (baseline — improve upon it)
+    ---------------------------------------------------
       Partition 1 — node-a, cores 0-3, 4 threads:  [freqmine, blackscholes, barnes]
       Partition 2 — node-a, cores 4-7, 4 threads:  [streamcluster, radix]
       Partition 3 — node-b, cores 0-2, 3 threads:  [canneal, vips]
 
-    Estimated sequential runtimes: partition 1 ≈ 211s, partition 2 ≈ 186s, 
-    partition 3 ≈ ~175s → bottleneck is partition 1.
+    Estimated runtimes: partition 1 ≈ 211s, partition 2 ≈ 186s, partition 3 ≈ 175s
+    Bottleneck is partition 1 at ~211s.
 
     OPTIMIZATION STRATEGY HINTS
     ----------------------------
-    - The bottleneck is partition 1 (~211s). Consider whether freqmine (the longest 
-      job at 128s with 4 threads) could get more cores, or be moved to 8 threads on 
-      machine a.
-    - Streamcluster scales well to 8 threads (109s vs 172s at 4) — giving it all 8 
-      cores of machine a alone would be faster, if other jobs can be redistributed.
-    - Radix is very short (9-14s) and low-interference — good candidate to pair 
-      with heavier jobs or run last.
-    - Avoid putting Streamcluster or Vips on machine b (high memBW/llc interference).
-    - Canneal has relatively low interference — safer for machine b if needed.
+    - Freqmine (128s at 4t) is the longest single job and the bottleneck driver.
+      Giving it 8 threads on machine a alone cuts it to 104s.
+    - Streamcluster scales very well: 172s at 4t → 109s at 8t. Giving it all 8
+      cores of machine a as a solo partition is a strong candidate.
+    - Radix is very short (9-14s) and low-interference — pair it with heavier jobs
+      or run it last in a partition; it barely affects makespan.
+    - If Streamcluster takes all 8 cores of machine a, remaining jobs
+      (freqmine, blackscholes, barnes, radix, vips) must go to machine b (max 3
+      cores) or be split into sub-partitions on machine a before/after streamcluster
+      — but partitions run in PARALLEL not sequentially across machines, so think
+      carefully about which jobs share machine a in time.
+    - Avoid putting Streamcluster or Vips on machine b (high memBW → latency spike).
+
+    CODE SCHEMA — your output must match this exactly
+    -------------------------------------------------
+    You are rewriting ONLY the `Scheduler.__init__` method.
+    `self.worker_config` is a list of dicts, each with these keys:
+
+      {
+        "node":    "node-a-8core" | "node-b-4core",
+        "cores":   "<start>-<end>",   # e.g. "0-7" or "0-2"
+        "threads": <int>,             # MUST equal end - start + 1
+        "jobs":    ["jobname", ...]   # run sequentially by this worker
+      }
+
+    Hard rules — any violation scores 0:
+      ❌ All 7 jobs must appear exactly once: freqmine, streamcluster, canneal,
+         blackscholes, vips, barnes, radix
+      ❌ threads must equal (end - start + 1)
+      ❌ Core ranges on the same node must not overlap
+      ❌ node-b cores must stay within 0-2 (core 3 is reserved)
+      ❌ Total cores used per node must not exceed: a→8, b→3
+      ❌ Do not modify anything outside the Scheduler class
         
 
 # You can learn more about these and other parameters here: https://github.com/algorithmicsuperintelligence/openevolve/blob/main/configs/default_config.yaml

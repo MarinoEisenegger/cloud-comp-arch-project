@@ -171,7 +171,6 @@ def run_job(job_name, node_type, cores, n_threads, worker_id):
 
 # -------------------------------------------------------------------
 
-# EVOLVE-BLOCK-START
 def worker(worker_cfg):
         
     w_id = worker_cfg['id']
@@ -184,16 +183,21 @@ def worker(worker_cfg):
 
     print(f"[worker-{w_id}] Exiting.")
 
+# EVOLVE-BLOCK-START
 class Scheduler:
-    """ Jobs we have to run:
-    [
-    "freqmine", "streamcluster", "canneal", "blackscholes", "vips", "barnes", "radix"
-    ]
+    """
+    Assign jobs to workers. Each worker_config entry must have:
+      node    : "node-a-8core" or "node-b-4core"
+      cores   : string like "0-3" or "4-7"
+      threads : int matching the number of cores in the range
+      jobs    : list of job names (subset of the 7 jobs below)
 
-    Cores we have available:
-    - node-a-8core: cores 0-7
-    - node-b-4core: cores 0-2 (3 is reserved for memcached)
+    Available hardware:
+      node-a-8core : cores 0-7  (can split into multiple workers)
+      node-b-4core : cores 0-2  (core 3 is reserved for memcached!)
 
+    All 7 jobs must appear exactly once across all workers:
+      freqmine, streamcluster, canneal, blackscholes, vips, barnes, radix
     """
     def __init__(self):
         self.worker_config = [

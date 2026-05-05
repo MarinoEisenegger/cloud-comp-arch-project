@@ -1,0 +1,204 @@
+2026-05-05 20:07:46,355 - openevolve.controller - INFO - Logging to out/logs/openevolve_20260505_200746.log
+2026-05-05 20:07:46,359 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-05-05 20:07:46,456 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: Qwen/Qwen3.5-27B
+2026-05-05 20:07:46,456 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: Qwen/Qwen3.5-27B (weight: 1.00)
+2026-05-05 20:07:46,495 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-05-05 20:07:46,502 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-05-05 20:07:46,503 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-05-05 20:07:46,506 - openevolve.evaluator - INFO - Successfully loaded evaluation function from code/evaluator.py
+2026-05-05 20:07:46,506 - openevolve.evaluator - INFO - Initialized evaluator with code/evaluator.py
+2026-05-05 20:07:46,506 - openevolve.controller - INFO - Initialized OpenEvolve with code/initial_program.py
+2026-05-05 20:07:46,506 - openevolve.controller - INFO - Adding initial program to database
+2026-05-05 20:07:58,565 - openevolve.evaluator - INFO - Evaluated program 20f204d1-e9f0-487d-beaf-5ee1995e175a in 12.06s: combined_score=0.0832, tail_latency=inf
+2026-05-05 20:07:58,565 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-05-05 20:07:58,566 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-05-05 20:07:58,567 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-05-05 20:07:58,567 - openevolve.controller - INFO - Using island-based evolution with 5 islands
+2026-05-05 20:07:58,567 - openevolve.database - INFO - Island Status:
+2026-05-05 20:07:58,567 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.0832, avg=0.0832, diversity=0.00, gen=0 (best: 20f204d1-e9f0-487d-beaf-5ee1995e175a)
+2026-05-05 20:07:58,567 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:07:58,567 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:07:58,567 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:07:58,567 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:07:58,567 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 10 iterations (total: 11)
+2026-05-05 20:07:58,574 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-05-05 20:07:58,676 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-05-05 20:07:58,677 - openevolve.evaluator - INFO - Successfully loaded evaluation function from code/evaluator.py
+2026-05-05 20:07:58,677 - openevolve.evaluator - INFO - Initialized evaluator with code/evaluator.py
+2026-05-05 20:07:58,678 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:08:15,284 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:08:22,447 - openevolve.evaluator - INFO - Evaluated program e1718a2d-49a6-4437-9d94-ebd19fc3e00f in 7.15s: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:08:22,449 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:08:22,453 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-05-05 20:08:22,453 - openevolve.database - INFO - New best program e1718a2d-49a6-4437-9d94-ebd19fc3e00f replaces 20f204d1-e9f0-487d-beaf-5ee1995e175a (combined_score: 0.0832 → 0.1407, +0.0574)
+2026-05-05 20:08:22,454 - openevolve.process_parallel - INFO - Iteration 1: Program e1718a2d-49a6-4437-9d94-ebd19fc3e00f (parent: 20f204d1-e9f0-487d-beaf-5ee1995e175a) completed in 23.77s
+2026-05-05 20:08:22,454 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:08:22,454 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 1: e1718a2d-49a6-4437-9d94-ebd19fc3e00f
+2026-05-05 20:08:22,454 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 1
+2026-05-05 20:08:22,454 - openevolve.database - INFO - Island Status:
+2026-05-05 20:08:22,454 - openevolve.database - INFO -  * Island 0: 2 programs, best=0.1407, avg=0.1120, diversity=99.10, gen=1 (best: e1718a2d-49a6-4437-9d94-ebd19fc3e00f)
+2026-05-05 20:08:22,454 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:08:22,454 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:08:22,454 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:08:22,454 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:08:22,456 - openevolve.database - INFO - Saved database with 2 programs to out/checkpoints/checkpoint_1
+2026-05-05 20:08:22,456 - openevolve.controller - INFO - Saved best program at checkpoint 1 with metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:08:22,456 - openevolve.controller - INFO - Saved checkpoint at iteration 1 to out/checkpoints/checkpoint_1
+2026-05-05 20:08:46,045 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:08:53,176 - openevolve.evaluator - INFO - Evaluated program e462af33-872b-49f2-8959-a088b1d0a851 in 7.13s: combined_score=0.1406, tail_latency=inf
+2026-05-05 20:08:53,178 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:08:53,183 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 7, 'diversity': 0}
+2026-05-05 20:08:53,183 - openevolve.process_parallel - INFO - Iteration 2: Program e462af33-872b-49f2-8959-a088b1d0a851 (parent: 20f204d1-e9f0-487d-beaf-5ee1995e175a) completed in 30.73s
+2026-05-05 20:08:53,183 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1406, tail_latency=inf
+2026-05-05 20:08:53,183 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 2
+2026-05-05 20:08:53,184 - openevolve.database - INFO - Island Status:
+2026-05-05 20:08:53,184 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.1407, avg=0.1215, diversity=66.07, gen=2 (best: e1718a2d-49a6-4437-9d94-ebd19fc3e00f)
+2026-05-05 20:08:53,184 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:08:53,184 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:08:53,184 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:08:53,184 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:08:53,185 - openevolve.database - INFO - Saved database with 3 programs to out/checkpoints/checkpoint_2
+2026-05-05 20:08:53,186 - openevolve.controller - INFO - Saved best program at checkpoint 2 with metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:08:53,186 - openevolve.controller - INFO - Saved checkpoint at iteration 2 to out/checkpoints/checkpoint_2
+2026-05-05 20:09:13,837 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:09:20,967 - openevolve.evaluator - INFO - Evaluated program 3171c7d2-40ab-44a0-adfc-3c4b71f00388 in 7.13s: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:09:20,969 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:09:20,974 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 8, 'diversity': 0}
+2026-05-05 20:09:20,975 - openevolve.process_parallel - INFO - Iteration 3: Program 3171c7d2-40ab-44a0-adfc-3c4b71f00388 (parent: 20f204d1-e9f0-487d-beaf-5ee1995e175a) completed in 27.79s
+2026-05-05 20:09:20,975 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:09:20,975 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 3
+2026-05-05 20:09:20,975 - openevolve.database - INFO - Island Status:
+2026-05-05 20:09:20,975 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.1407, avg=0.1263, diversity=52.42, gen=3 (best: e1718a2d-49a6-4437-9d94-ebd19fc3e00f)
+2026-05-05 20:09:20,975 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:09:20,976 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:09:20,976 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:09:20,976 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:09:20,977 - openevolve.database - INFO - Saved database with 4 programs to out/checkpoints/checkpoint_3
+2026-05-05 20:09:20,977 - openevolve.controller - INFO - Saved best program at checkpoint 3 with metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:09:20,977 - openevolve.controller - INFO - Saved checkpoint at iteration 3 to out/checkpoints/checkpoint_3
+2026-05-05 20:09:41,195 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:09:48,326 - openevolve.evaluator - INFO - Evaluated program 9007f7e0-6c96-4a45-b4cb-49e75d7fe865 in 7.13s: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:09:48,327 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:09:48,334 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 1}
+2026-05-05 20:09:48,334 - openevolve.process_parallel - INFO - Iteration 4: Program 9007f7e0-6c96-4a45-b4cb-49e75d7fe865 (parent: 20f204d1-e9f0-487d-beaf-5ee1995e175a) completed in 27.36s
+2026-05-05 20:09:48,334 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:09:48,334 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 4
+2026-05-05 20:09:48,335 - openevolve.database - INFO - Island Status:
+2026-05-05 20:09:48,335 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.1407, avg=0.1292, diversity=68.83, gen=4 (best: e1718a2d-49a6-4437-9d94-ebd19fc3e00f)
+2026-05-05 20:09:48,335 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:09:48,335 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:09:48,335 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:09:48,335 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:09:48,336 - openevolve.database - INFO - Saved database with 5 programs to out/checkpoints/checkpoint_4
+2026-05-05 20:09:48,337 - openevolve.controller - INFO - Saved best program at checkpoint 4 with metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:09:48,337 - openevolve.controller - INFO - Saved checkpoint at iteration 4 to out/checkpoints/checkpoint_4
+2026-05-05 20:10:48,383 - openai._base_client - INFO - Retrying request to /chat/completions in 0.398623 seconds
+2026-05-05 20:10:48,389 - openevolve.llm.openai - WARNING - Timeout on attempt 1/4. Retrying...
+2026-05-05 20:11:11,626 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:11:18,199 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:11:25,330 - openevolve.evaluator - INFO - Evaluated program 29574321-17a1-4d05-a7f1-7a6751be189b in 7.13s: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:11:25,332 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:11:25,335 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 0}
+2026-05-05 20:11:25,335 - openevolve.process_parallel - INFO - Iteration 5: Program 29574321-17a1-4d05-a7f1-7a6751be189b (parent: 20f204d1-e9f0-487d-beaf-5ee1995e175a) completed in 97.00s
+2026-05-05 20:11:25,335 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:11:25,335 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 5
+2026-05-05 20:11:25,336 - openevolve.database - INFO - Island Status:
+2026-05-05 20:11:25,336 - openevolve.database - INFO -  * Island 0: 6 programs, best=0.1407, avg=0.1311, diversity=73.72, gen=5 (best: e1718a2d-49a6-4437-9d94-ebd19fc3e00f)
+2026-05-05 20:11:25,336 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:11:25,336 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:11:25,336 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:11:25,336 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:11:25,338 - openevolve.database - INFO - Saved database with 6 programs to out/checkpoints/checkpoint_5
+2026-05-05 20:11:25,338 - openevolve.controller - INFO - Saved best program at checkpoint 5 with metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:11:25,338 - openevolve.controller - INFO - Saved checkpoint at iteration 5 to out/checkpoints/checkpoint_5
+2026-05-05 20:11:42,553 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:11:49,686 - openevolve.evaluator - INFO - Evaluated program ae7f6c69-3bb9-42c1-a96a-6b9b585fe055 in 7.13s: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:11:49,688 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:11:49,694 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 8, 'diversity': 9}
+2026-05-05 20:11:49,695 - openevolve.process_parallel - INFO - Iteration 6: Program ae7f6c69-3bb9-42c1-a96a-6b9b585fe055 (parent: 20f204d1-e9f0-487d-beaf-5ee1995e175a) completed in 24.36s
+2026-05-05 20:11:49,695 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:11:49,695 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 6
+2026-05-05 20:11:49,696 - openevolve.database - INFO - Island Status:
+2026-05-05 20:11:49,696 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.1407, avg=0.1325, diversity=73.72, gen=6 (best: e1718a2d-49a6-4437-9d94-ebd19fc3e00f)
+2026-05-05 20:11:49,696 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:11:49,696 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:11:49,696 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:11:49,696 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:11:49,698 - openevolve.database - INFO - Saved database with 7 programs to out/checkpoints/checkpoint_6
+2026-05-05 20:11:49,698 - openevolve.controller - INFO - Saved best program at checkpoint 6 with metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:11:49,698 - openevolve.controller - INFO - Saved checkpoint at iteration 6 to out/checkpoints/checkpoint_6
+2026-05-05 20:12:22,973 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:12:29,003 - openevolve.evaluator - INFO - Evaluated program cf1fda97-95b0-42b2-8f59-7570060e9fff in 6.03s: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:12:29,005 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:12:29,006 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 9, 'diversity': 0} (fitness: 0.141 -> 0.166)
+2026-05-05 20:12:29,006 - openevolve.database - INFO - New best program cf1fda97-95b0-42b2-8f59-7570060e9fff replaces e1718a2d-49a6-4437-9d94-ebd19fc3e00f (combined_score: 0.1407 → 0.1665, +0.0258)
+2026-05-05 20:12:29,006 - openevolve.process_parallel - INFO - Iteration 7: Program cf1fda97-95b0-42b2-8f59-7570060e9fff (parent: e1718a2d-49a6-4437-9d94-ebd19fc3e00f) completed in 39.32s
+2026-05-05 20:12:29,006 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:12:29,006 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 7: cf1fda97-95b0-42b2-8f59-7570060e9fff
+2026-05-05 20:12:29,006 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 7
+2026-05-05 20:12:29,006 - openevolve.database - INFO - Island Status:
+2026-05-05 20:12:29,006 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.1665, avg=0.1362, diversity=72.42, gen=7 (best: cf1fda97-95b0-42b2-8f59-7570060e9fff)
+2026-05-05 20:12:29,006 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:12:29,006 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:12:29,007 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:12:29,007 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:12:29,010 - openevolve.database - INFO - Saved database with 8 programs to out/checkpoints/checkpoint_7
+2026-05-05 20:12:29,010 - openevolve.controller - INFO - Saved best program at checkpoint 7 with metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:12:29,011 - openevolve.controller - INFO - Saved checkpoint at iteration 7 to out/checkpoints/checkpoint_7
+2026-05-05 20:13:04,137 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:13:10,184 - openevolve.evaluator - INFO - Evaluated program 86414d96-3287-4ab1-b381-379ed3ffbb47 in 6.04s: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:13:10,187 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:13:10,192 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 7, 'diversity': 0} (fitness: 0.141 -> 0.166)
+2026-05-05 20:13:10,192 - openevolve.process_parallel - INFO - Iteration 8: Program 86414d96-3287-4ab1-b381-379ed3ffbb47 (parent: e462af33-872b-49f2-8959-a088b1d0a851) completed in 41.18s
+2026-05-05 20:13:10,192 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:13:10,192 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 8
+2026-05-05 20:13:10,193 - openevolve.database - INFO - Island Status:
+2026-05-05 20:13:10,193 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.1665, avg=0.1398, diversity=70.80, gen=8 (best: cf1fda97-95b0-42b2-8f59-7570060e9fff)
+2026-05-05 20:13:10,193 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:13:10,193 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:13:10,193 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:13:10,193 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:13:10,196 - openevolve.database - INFO - Saved database with 9 programs to out/checkpoints/checkpoint_8
+2026-05-05 20:13:10,196 - openevolve.controller - INFO - Saved best program at checkpoint 8 with metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:13:10,196 - openevolve.controller - INFO - Saved checkpoint at iteration 8 to out/checkpoints/checkpoint_8
+2026-05-05 20:13:46,918 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:13:52,965 - openevolve.evaluator - INFO - Evaluated program 0fae7113-d723-43de-b312-6b116d7b20bc in 6.04s: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:13:52,968 - openevolve.llm.ensemble - INFO - Sampled model: Qwen/Qwen3.5-27B
+2026-05-05 20:13:52,977 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 9, 'diversity': 0} (fitness: 0.166 -> 0.166)
+2026-05-05 20:13:52,977 - openevolve.database - INFO - New best program 0fae7113-d723-43de-b312-6b116d7b20bc replaces cf1fda97-95b0-42b2-8f59-7570060e9fff (combined_score: 0.1665 → 0.1665, +0.0000)
+2026-05-05 20:13:52,978 - openevolve.process_parallel - INFO - Iteration 9: Program 0fae7113-d723-43de-b312-6b116d7b20bc (parent: 9007f7e0-6c96-4a45-b4cb-49e75d7fe865) completed in 42.78s
+2026-05-05 20:13:52,978 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:13:52,978 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 9: 0fae7113-d723-43de-b312-6b116d7b20bc
+2026-05-05 20:13:52,978 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 9
+2026-05-05 20:13:52,978 - openevolve.database - INFO - Island Status:
+2026-05-05 20:13:52,978 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.1665, avg=0.1398, diversity=57.87, gen=9 (best: 0fae7113-d723-43de-b312-6b116d7b20bc)
+2026-05-05 20:13:52,978 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:13:52,979 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:13:52,979 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:13:52,979 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:13:52,983 - openevolve.database - INFO - Saved database with 10 programs to out/checkpoints/checkpoint_9
+2026-05-05 20:13:52,983 - openevolve.controller - INFO - Saved best program at checkpoint 9 with metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:13:52,983 - openevolve.controller - INFO - Saved checkpoint at iteration 9 to out/checkpoints/checkpoint_9
+2026-05-05 20:14:14,896 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-05 20:14:22,048 - openevolve.evaluator - INFO - Evaluated program c0dd1789-c684-4d27-940c-a6e8f87942c6 in 7.15s: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:14:22,052 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 8, 'diversity': 0} (fitness: 0.141 -> 0.141)
+2026-05-05 20:14:22,052 - openevolve.process_parallel - INFO - Iteration 10: Program c0dd1789-c684-4d27-940c-a6e8f87942c6 (parent: 20f204d1-e9f0-487d-beaf-5ee1995e175a) completed in 29.08s
+2026-05-05 20:14:22,052 - openevolve.process_parallel - INFO - Metrics: combined_score=0.1407, tail_latency=inf
+2026-05-05 20:14:22,052 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 10
+2026-05-05 20:14:22,053 - openevolve.database - INFO - Island Status:
+2026-05-05 20:14:22,053 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.1665, avg=0.1398, diversity=60.18, gen=10 (best: 0fae7113-d723-43de-b312-6b116d7b20bc)
+2026-05-05 20:14:22,053 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:14:22,053 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:14:22,053 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:14:22,053 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-05 20:14:22,057 - openevolve.database - INFO - Saved database with 11 programs to out/checkpoints/checkpoint_10
+2026-05-05 20:14:22,058 - openevolve.controller - INFO - Saved best program at checkpoint 10 with metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:14:22,058 - openevolve.controller - INFO - Saved checkpoint at iteration 10 to out/checkpoints/checkpoint_10
+2026-05-05 20:14:22,058 - openevolve.process_parallel - INFO - ✅ Evolution completed - Maximum iterations reached
+2026-05-05 20:14:22,063 - openevolve.database - INFO - Saved database with 11 programs to out/checkpoints/checkpoint_10
+2026-05-05 20:14:22,063 - openevolve.controller - INFO - Saved best program at checkpoint 10 with metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:14:22,063 - openevolve.controller - INFO - Saved checkpoint at iteration 10 to out/checkpoints/checkpoint_10
+2026-05-05 20:14:22,094 - openevolve.process_parallel - INFO - Stopped process pool
+2026-05-05 20:14:22,095 - openevolve.controller - INFO - Using tracked best program: 0fae7113-d723-43de-b312-6b116d7b20bc
+2026-05-05 20:14:22,095 - openevolve.controller - INFO - Evolution complete. Best program has metrics: combined_score=0.1665, tail_latency=inf
+2026-05-05 20:14:22,095 - openevolve.controller - INFO - Saved best program to out/best/best_program.py with program info to out/best/best_program_info.json

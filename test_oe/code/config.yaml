@@ -1,0 +1,98 @@
+# By default, your evolution will run for 50 iterations; feel free to change this value as needed.
+# At any time, you can resume evolution from a specific checkpoint by providing the --checkpoint flag to openevolve-run.
+max_iterations: 10
+checkpoint_interval: 1 # Do not change this
+
+llm:
+  api_base: "https://api.swissai.cscs.ch/v1"
+  primary_model: "Qwen/Qwen3.5-27B"
+  top_p: 0.7 # Feel free to experiment with this value
+  # Possible additional parameters to configure the LLM:
+  # temperature: 
+  # max_tokens: 
+  # timeout: 
+
+prompt:
+  # Prompts to provide the LLM with. You can directly write the prompt in the config, e.g.
+  # system_message: |
+  #   You are an expert programmer tasked with optimizing the following code...
+  #
+  # Alternatively, you can create files containing the prompts, and reference them here, e.g.
+  # template_dir: "<path-to-prompt-directory>"
+  # system_message: "name_of_file"
+  #
+  # The system message will be the content of the file <path-to-prompt-directory>/name_of_file.txt
+  system_message: |
+    You are an expert in combinatorial optimisation and parallel scheduling.
+ 
+    ## Problem
+    You are evolving the `Scheduler` class inside `evolve_target.py`.
+    The scheduler assigns a fixed set of jobs to workers (threads).
+    Each worker executes its jobs **sequentially**; workers run **in parallel**.
+    The goal is to minimise **makespan** — the wall-clock time until the last
+    worker finishes.
+ 
+    ## Job durations (seconds, fixed — do not change these)
+    | job             | duration |
+    |-----------------|----------|
+    | barnes          | 3.2      |
+    | blackscholes    | 1.5      |
+    | canneal         | 4.8      |
+    | freqmine        | 5.1      |
+    | radix           | 2.3      |
+    | streamcluster   | 6.0      |
+    | vips            | 3.7      |
+ 
+    Total work = 26.6 s.
+    Theoretical lower bound ≈ 6.0 s (longest job, with unlimited workers).
+ 
+    ## Score
+    score = 1 / makespan   →   higher is better.
+    The baseline round-robin across 3 workers scores around 1/9 ≈ 0.111.
+    A good LPT solution targeting ~6 s would score ~0.167.
+ 
+    ## What you MAY change (inside EVOLVE-BLOCK only)
+    ✅ Number of workers (len of self.worker_config)
+    ✅ Which jobs each worker gets and their order
+    ✅ Any pure-Python logic inside __init__ and run()
+ 
+    ## What you MUST NOT change
+    ❌ The JOBS dict at module level (job names or durations)
+    ❌ The worker() function or run_job() function signatures
+    ❌ The MAKESPAN= print statement at the bottom of __main__
+    ❌ Anything outside the EVOLVE-BLOCK markers
+ 
+    ## Hard constraint
+    Every job in JOBS must appear in exactly one worker's "jobs" list.
+    Missing or duplicate jobs cause a score of 0.
+ 
+    ## Optimisation hints
+    - Longest Processing Time (LPT): sort jobs by duration descending, assign
+      each to the worker with the current smallest total load.
+    - Multifit / bin-packing variants can do even better.
+    - Ordering jobs within a worker doesn't change makespan but feel free
+      to keep it tidy.
+    - You can use any number of workers, but more workers than jobs is wasteful.
+ 
+    ## Output format
+    Return ONLY the evolved code block (the Scheduler class).
+    Do not include any explanation outside the code.
+
+        
+
+# You can learn more about these and other parameters here: https://github.com/algorithmicsuperintelligence/openevolve/blob/main/configs/default_config.yaml
+database:
+  population_size: 200 # Do not change this
+  # Relevant parameters:
+  # num_islands: 
+  # elite_selection_ratio: 
+  # exploitation_ratio: 
+
+# Evaluator configuration
+evaluator:
+  timeout: 420
+  cascade_evaluation: false
+  parallel_evaluations: 1
+
+diff_based_evolution: true
+max_code_length: 50000

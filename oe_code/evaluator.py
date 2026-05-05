@@ -70,18 +70,24 @@ def evaluate(program_path: str) -> EvaluationResult:
     max_tail_latency = max_p95(f"{OUTDIR}/mcperf_1.txt")
 
 
-    comb_score = max(0.0, 360 - total_time) / 360  # Normalize to [0,1], with a cap at 6 minutes (360 seconds)
+    time_score = max(0.0, 360 - total_time) / 360  # Normalize to [0,1], with a cap at 6 minutes (360 seconds)
 
-    if max_tail_latency == float("-inf"):
-        return EvaluationResult(metrics={"combined_score": 0.0, "tail_latency": max_tail_latency}, 
-                                artifacts={"error": "No tail latency found...", "timings": timings})
-    
-    elif max_tail_latency > 1000:
-        return EvaluationResult(metrics={"combined_score": 0.0, "tail_latency": max_tail_latency}, 
-                                artifacts={"error": "Tail latency exceeds threshold", "timings": timings})
+    # Latency score: 1.0 at or below target, decays to 0 at threshold, negative beyond threshold
+    latency_score = max(-1.0, (1000 - max_tail_latency) / (1000 - 500))
 
-    return EvaluationResult(metrics={"combined_score": comb_score, "tail_latency": max_tail_latency}, 
-                            artifacts={"error": None, "timings": timings})
+    if latency_score <= 0:
+        # Hard penalty: latency is unacceptable, but score reflects how bad
+        combined_score = max(0.0, latency_score + 0.5) * 0.1
+    else:
+        # Both metrics contribute; latency is a multiplier on time
+        combined_score = time_score * (0.5 + 0.5 * latency_score)
+
+    return EvaluationResult(
+        metrics={"combined_score": combined_score, "tail_latency": max_tail_latency},
+        artifacts={"error": None, "timings": timings,
+                   "time_score": str(round(time_score, 3)),
+                   "latency_score": str(round(latency_score, 3))}
+    )
 
 if __name__ == "__main__":
     result = evaluate("./oe_code/initial_program.py")
