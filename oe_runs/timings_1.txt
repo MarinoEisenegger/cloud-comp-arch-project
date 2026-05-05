@@ -1,24 +1,2 @@
-Job:  parsec-barnes
-Job time:  0:00:42
-Job:  parsec-blackscholes
-Job time:  0:00:36
 Job:  parsec-canneal
-Job time:  0:02:21
-Job:  parsec-freqmine
-Job time:  0:01:59
-Job:  parsec-radix
-Job time:  0:00:22
-Job:  parsec-radix
-Job time:  0:00:21
-Job:  parsec-radix
-Job time:  0:00:20
-Job:  parsec-radix
-Job time:  0:00:21
-Job:  parsec-radix
-Job time:  0:00:20
-Job:  parsec-streamcluster
-Job time:  0:02:59
-Job:  parsec-vips
-Job time:  0:00:18
-Job:  memcached
-You haven't run all the PARSEC jobs. Exiting...
+Job parsec-canneal has not completed....

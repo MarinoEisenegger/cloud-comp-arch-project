@@ -1,6 +1,6 @@
 # By default, your evolution will run for 50 iterations; feel free to change this value as needed.
 # At any time, you can resume evolution from a specific checkpoint by providing the --checkpoint flag to openevolve-run.
-max_iterations: 5
+max_iterations: 50
 checkpoint_interval: 1 # Do not change this
 
 llm:
@@ -23,135 +23,102 @@ prompt:
   #
   # The system message will be the content of the file <path-to-prompt-directory>/name_of_file.txt
   system_message: |
-    You are an expert programmer tasked with optimizing the scheduling of 7 batch jobs on a cluster of 2 machines.
-    One machine has 4 CPU cores and the other has 8 CPU cores.
-    On the 4 CPU core machine, 1 core (fourth one) is consistently used for memcached. The remaining 3 cores (0-2), 
-    and the 8 cores from the other machine are available for the batch jobs.
-    There is a trade off when scheduling: You want parallel execution to minimize the total execution time,
-    but the jobs have different sensitivity to interference from other jobs (listed below). Also, the jobs
-    have different execution times depending on the amount of threads, with non-linear speedups (both listed below).
+    You are an expert programmer tasked with optimizing the scheduling of 7 batch jobs 
+    on a cluster of 2 machines:
+      - Machine a: 8 CPU cores (cores 0-7), all available for batch jobs
+      - Machine b: 4 CPU cores (cores 0-3), where core 3 is permanently reserved 
+        for memcached — only cores 0-2 are available for batch jobs
 
-    Your goal is to minimize the total execution time, while you also have to ensure a 95th percentile
-    tail latency below 1ms for memcached.
+    OBJECTIVE
+    ---------
+    Minimize total wall-clock execution time (score improves as time drops below 
+    6 minutes), while keeping the 95th percentile memcached tail latency below 1ms.
+    Since memcached runs on machine b, avoid scheduling high-interference or 
+    memory-bandwidth-heavy jobs there.
 
-    List of (parsec / splash2x) jobs:
-    - Barnes: 
-      - Runtime per threads (seconds): 
-        - 1: 133
-        - 2: 68 (1.95x)
-        - 4: 35 (3.8x)
-        - 8: 28 (4.8x)
-      - Normalized runtime with interference:
-        - cpu: 1.53
-        - l1d: 1.63
-        - l1i: 1.55
-        - l2: 1.58
-        - llc: 1.74
-        - memBW: 1.70
-
-    - Blackscholes: 
-      - Runtime per threads (seconds): 
-        - 1: 127
-        - 2: 74 (1.71x)
-        - 4: 48 (2.65x)
-        - 8: 38 (3.34x)
-      - Normalized runtime with interference:
-        - cpu: 1.52
-        - l1d: 1.49
-        - l1i: 1.54
-        - l2: 1.50
-        - llc: 1.65
-        - memBW: 1.67
-
-    - Canneal: 
-      - Runtime per threads (seconds): 
-        - 1: 256
-        - 2: 156 (1.64x)
-        - 4: 102 (2.51x)
-        - 8: 80 (3.2x)
-      - Normalized runtime with interference:
-        - cpu: 1.23
-        - l1d: 1.28
-        - l1i: 1.21
-        - l2: 1.35
-        - llc: 1.47
-        - memBW: 1.70
-
-    - Freqmine: 
-      - Runtime per threads (seconds): 
-        - 1: 501
-        - 2: 254 (1.95x)
-        - 4: 128 (3.8x)
-        - 8: 104 (4.8x)
-      - Normalized runtime with interference:
-        - cpu: 2.25
-        - l1d: 1.43
-        - l1i: 2.18
-        - l2: 1.40
-        - llc: 1.73
-        - memBW: 1.64
-
-    - Radix: 
-      - Runtime per threads (seconds): 
-        - 1: 54
-        - 2: 27 (2x)
-        - 4: 14 (3.8x)
-        - 8: 9 (4.8x)
-      - Normalized runtime with interference:
-        - cpu: 1.12
-        - l1d: 1.22
-        - l1i: 1.05
-        - l2: 1.06
-        - llc: 1.18
-        - memBW: 1.24
-    
-    - Streamcluster: 
-      - Runtime per threads (seconds): 
-        - 1: 651
-        - 2: 334 (1.95x)
-        - 4: 172 (3.8x)
-        - 8: 109 (4.8x)
-      - Normalized runtime with interference:
-        - cpu: 1.9
-        - l1d: 2.38
-        - l1i: 1.67
-        - l2: 1.85
-        - llc: 2.30
-        - memBW: 2.16
-
-    - Vips: 
-      - Runtime per threads (seconds): 
-        - 1: 105
-        - 2: 71 (1.48x)
-        - 4: 41 (2.56x)
-        - 8: 24 (4.38x)
-      - Normalized runtime with interference:
-        - cpu: 1.72
-        - l1d: 1.85
-        - l1i: 1.80
-        - l2: 1.70
-        - llc: 1.89
-        - memBW: 1.84
-
-    You will receive evaluationresults:
-      - metrics:
-        - combined_score: Score based on how much smaller the total execution time is than 5 minutes (normalized to [0,1]). 0 if tail latency is above 1ms
-        - tail_latency: 95th percentile latency of memcached in microseconds
-      
-      - artifacts:
-        - error: If something went wrong during evaluation, this field will contain a string describing the error. Otherwise, it will be "None".
-        - timings: A dictionary containing the execution time of each job, as well as the total execution time
-
-    You should provide your schedule in the form of yaml with 7 entries, following specification:
-    YAML format
+    CONSTRAINTS
     -----------
-    <job-suffix>:          # e.g. freqmine  →  launched as parsec-freqmine
-        node  : "a"        # "a" = node-a-8core  |  "b" = node-b-4core
-        cores : "0-3"
-        order : 1          # lower = higher priority within the same slot
+    - Jobs pinned to N cores must use exactly N threads.
+    - Jobs within a partition run sequentially; partitions across the cluster run 
+      in parallel.
+    - Do not exceed available cores per machine (8 on a, 3 on b).
+    - WARNING: Some job combinations cause timeouts (e.g. due to memory 
+      constraints). Always check the `error` field in evaluation results first. 
+      A timeout scores 0.
 
-    Remember: You have available on a: 0-7 and b: 0-2 (3 is already in use by memcached)
-    
+    INTERFERENCE NOTES
+    ------------------
+    The interference multipliers below reflect slowdown when a job co-executes 
+    with a stressor of that type. When two jobs share a machine, assume the 
+    dominant shared resource is LLC (last-level cache) and memBW (memory bandwidth).
+    Prefer pairing jobs with low LLC and memBW sensitivity together.
+    Jobs with high memBW interference are especially risky on machine b 
+    (they degrade memcached latency).
+
+    JOB DATA
+    --------
+    Barnes:
+      Threads → seconds: 1→133, 2→68 (1.95x), 4→35 (3.8x), 8→28 (4.8x)
+      Interference:  cpu:1.53  l1d:1.63  l1i:1.55  l2:1.58  llc:1.74  memBW:1.70
+
+    Blackscholes:
+      Threads → seconds: 1→127, 2→74 (1.71x), 4→48 (2.65x), 8→38 (3.34x)
+      Interference:  cpu:1.52  l1d:1.49  l1i:1.54  l2:1.50  llc:1.65  memBW:1.67
+
+    Canneal:
+      Threads → seconds: 1→256, 2→156 (1.64x), 4→102 (2.51x), 8→80 (3.2x)
+      Interference:  cpu:1.23  l1d:1.28  l1i:1.21  l2:1.35  llc:1.47  memBW:1.70
+
+    Freqmine:
+      Threads → seconds: 1→501, 2→254 (1.95x), 4→128 (3.8x), 8→104 (4.8x)
+      Interference:  cpu:2.25  l1d:1.43  l1i:2.18  l2:1.40  llc:1.73  memBW:1.64
+
+    Radix:
+      Threads → seconds: 1→54,  2→27 (2x),   4→14 (3.8x), 8→9  (4.8x)
+      Interference:  cpu:1.12  l1d:1.22  l1i:1.05  l2:1.06  llc:1.18  memBW:1.24
+
+    Streamcluster:
+      Threads → seconds: 1→651, 2→334 (1.95x), 4→172 (3.8x), 8→109 (4.8x)
+      Interference:  cpu:1.90  l1d:2.38  l1i:1.67  l2:1.85  llc:2.30  memBW:2.16
+
+    Vips:
+      Threads → seconds: 1→105, 2→71 (1.48x), 4→41 (2.56x), 8→24 (4.38x)
+      Interference:  cpu:1.72  l1d:1.85  l1i:1.80  l2:1.70  llc:1.89  memBW:1.84
+
+    EVALUATION FEEDBACK
+    -------------------
+    You will receive:
+      - combined_score: float in [0,1], computed as max(0, 360 - total_time) / 360
+                        Every second of total execution time saved = +0.00278 score.
+                        Score is 0 if tail latency exceeds 1000 µs at any point.
+      - tail_latency:   Worst-case p95 memcached latency in microseconds across all 
+                        measurement windows. Must stay below 1000 µs (= 1ms).
+      - error:          String or null — ALWAYS check this first on any bad result.
+                        The hard execution timeout is 360 seconds; anything exceeding 
+                        that scores 0 with error "Timed out after 6 minutes".
+      - timings:        Per-job and total execution times from timings_1.txt
+
+    CURRENT BEST SCHEDULE (use as baseline, improve upon it)
+    ---------------------------------------------------------
+      Partition 1 — node-a, cores 0-3, 4 threads:  [freqmine, blackscholes, barnes]
+      Partition 2 — node-a, cores 4-7, 4 threads:  [streamcluster, radix]
+      Partition 3 — node-b, cores 0-2, 3 threads:  [canneal, vips]
+
+    Estimated sequential runtimes: partition 1 ≈ 211s, partition 2 ≈ 186s, 
+    partition 3 ≈ ~175s → bottleneck is partition 1.
+
+    OPTIMIZATION STRATEGY HINTS
+    ----------------------------
+    - The bottleneck is partition 1 (~211s). Consider whether freqmine (the longest 
+      job at 128s with 4 threads) could get more cores, or be moved to 8 threads on 
+      machine a.
+    - Streamcluster scales well to 8 threads (109s vs 172s at 4) — giving it all 8 
+      cores of machine a alone would be faster, if other jobs can be redistributed.
+    - Radix is very short (9-14s) and low-interference — good candidate to pair 
+      with heavier jobs or run last.
+    - Avoid putting Streamcluster or Vips on machine b (high memBW/llc interference).
+    - Canneal has relatively low interference — safer for machine b if needed.
+        
 
 # You can learn more about these and other parameters here: https://github.com/algorithmicsuperintelligence/openevolve/blob/main/configs/default_config.yaml
 database:
@@ -163,7 +130,7 @@ database:
 
 # Evaluator configuration
 evaluator:
-  timeout: 700
+  timeout: 420
   cascade_evaluation: false
   parallel_evaluations: 1
 

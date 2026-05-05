@@ -196,6 +196,8 @@ class Scheduler:
 
     """
     def __init__(self):
+        self.job_queue = Queue()
+
         self.worker_config = [
             {"node": "node-a-8core", "cores": "0-3", "threads": 4, "jobs": ["freqmine", "blackscholes", "barnes"]},
             {"node": "node-a-8core", "cores": "4-7", "threads": 4, "jobs": ["streamcluster", "radix"]},

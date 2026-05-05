@@ -49,14 +49,14 @@ def evaluate(program_path: str) -> EvaluationResult:
     try:
         process = subprocess.run(
             ["uv", "run", program_path],
-            timeout=600,  # 10 minutes
+            timeout=360,  # 6 minutes
             capture_output=True,
             text=True
         )
     except subprocess.TimeoutExpired:
         return EvaluationResult(
             metrics={"combined_score": 0.0, "tail_latency": float('inf')},
-            artifacts={"error": "Timed out after 10 minutes", "timings": "No timings"}
+            artifacts={"error": "Timed out after 6 minutes", "timings": "No timings"}
         )
 
     if process.returncode != 0:
@@ -70,7 +70,7 @@ def evaluate(program_path: str) -> EvaluationResult:
     max_tail_latency = max_p95(f"{OUTDIR}/mcperf_1.txt")
 
 
-    comb_score = max(0.0, 600 - total_time) / 600  # Normalize to [0,1], with a cap at 10 minutes (600 seconds)
+    comb_score = max(0.0, 360 - total_time) / 360  # Normalize to [0,1], with a cap at 6 minutes (360 seconds)
 
     if max_tail_latency == float("-inf"):
         return EvaluationResult(metrics={"combined_score": 0.0, "tail_latency": max_tail_latency}, 

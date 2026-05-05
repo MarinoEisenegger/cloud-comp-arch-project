@@ -3,9 +3,6 @@ PROJECT=`gcloud config get-value project`
 kops create -f part3.yaml
 kops update cluster --name part3.k8s.local --yes --admin
 kops validate cluster --wait 10m
-```
-
-```bash
 kubectl get nodes -o wide
 ```
 
@@ -31,7 +28,7 @@ kubectl label nodes node-b-4core- cca-project-nodetype="node-b-4core"
 ```
 
 ```bash
-kubectl create -f memcache_node_b_2core.yaml
+kubectl create -f memcache_node_b_1core.yaml
 kubectl expose pod some-memcached --name some-memcached-11211 \
     --type LoadBalancer --port 11211 \
     --protocol TCP
@@ -44,9 +41,9 @@ kubectl get service some-memcached-11211
 
 ./mcperf -T 4 -A
 
-export MEMCACHED_IP=100.70.77.158
-export INTERNAL_AGENT_A_IP=10.0.16.3
-export INTERNAL_AGENT_B_IP=10.0.16.8
+export MEMCACHED_IP=100.66.18.210
+export INTERNAL_AGENT_A_IP=10.0.16.6
+export INTERNAL_AGENT_B_IP=10.0.16.3
 ./mcperf -s $MEMCACHED_IP --loadonly
 while true; do
     ./mcperf -s $MEMCACHED_IP -a $INTERNAL_AGENT_A_IP -a $INTERNAL_AGENT_B_IP \
@@ -63,4 +60,10 @@ kubectl delete job parsec-freqmine
 kubectl delete job parsec-streamcluster
 kubectl delete job parsec-vips
 kubectl delete job parsec-radix
+```
+
+```bash
+kubectl delete service some-memcached-11211
+kubectl delete -f memcache_node_b_2core.yaml
+kops delete cluster --name part3.k8s.local --yes
 ```

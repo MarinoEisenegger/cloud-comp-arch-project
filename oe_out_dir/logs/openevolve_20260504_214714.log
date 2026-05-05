@@ -1,0 +1,84 @@
+2026-05-04 21:47:14,082 - openevolve.controller - INFO - Logging to oe_out_dir/logs/openevolve_20260504_214714.log
+2026-05-04 21:47:14,087 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-05-04 21:47:14,154 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: swiss-ai/Apertus-70B-Instruct-2509
+2026-05-04 21:47:14,154 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: swiss-ai/Apertus-70B-Instruct-2509 (weight: 1.00)
+2026-05-04 21:47:14,204 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-05-04 21:47:14,205 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-05-04 21:47:14,206 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-05-04 21:47:14,207 - openevolve.evaluator - INFO - Successfully loaded evaluation function from oe_code/evaluator.py
+2026-05-04 21:47:14,207 - openevolve.evaluator - INFO - Initialized evaluator with oe_code/evaluator.py
+2026-05-04 21:47:14,207 - openevolve.controller - INFO - Initialized OpenEvolve with oe_code/initial_program.py
+2026-05-04 21:47:14,207 - openevolve.controller - INFO - Adding initial program to database
+2026-05-04 21:51:49,723 - openevolve.evaluator - INFO - Evaluated program d74bca4d-1d6e-4f44-890d-1113bd63f528 in 275.52s: combined_score=0.0000, tail_latency=402.5000
+2026-05-04 21:51:49,723 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-05-04 21:51:49,724 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-05-04 21:51:49,725 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-05-04 21:51:49,725 - openevolve.controller - INFO - Using island-based evolution with 5 islands
+2026-05-04 21:51:49,725 - openevolve.database - INFO - Island Status:
+2026-05-04 21:51:49,726 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0 (best: d74bca4d-1d6e-4f44-890d-1113bd63f528)
+2026-05-04 21:51:49,726 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-04 21:51:49,726 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-04 21:51:49,726 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-04 21:51:49,726 - openevolve.database - INFO -    Island 4: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-05-04 21:51:49,726 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 50 iterations (total: 51)
+2026-05-04 21:51:49,731 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-05-04 21:51:49,815 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-05-04 21:51:49,816 - openevolve.evaluator - INFO - Successfully loaded evaluation function from oe_code/evaluator.py
+2026-05-04 21:51:49,816 - openevolve.evaluator - INFO - Initialized evaluator with oe_code/evaluator.py
+2026-05-04 21:51:49,817 - openevolve.llm.ensemble - INFO - Sampled model: swiss-ai/Apertus-70B-Instruct-2509
+2026-05-04 21:52:49,866 - openevolve.llm.openai - WARNING - Timeout on attempt 1/4. Retrying...
+2026-05-04 21:52:50,154 - openai._base_client - INFO - Retrying request to /chat/completions in 0.423552 seconds
+2026-05-04 21:53:50,666 - openai._base_client - INFO - Retrying request to /chat/completions in 0.902312 seconds
+2026-05-04 21:53:54,933 - openevolve.llm.openai - WARNING - Timeout on attempt 2/4. Retrying...
+2026-05-04 21:53:54,950 - openai._base_client - INFO - Retrying request to /chat/completions in 0.386391 seconds
+2026-05-04 21:54:13,466 - openevolve.controller - INFO - Received signal 2, initiating graceful shutdown...
+2026-05-04 21:54:13,466 - openevolve.controller - INFO - Received signal 2, initiating graceful shutdown...
+2026-05-04 21:54:13,467 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-05-04 21:54:13,467 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-05-04 21:54:13,475 - openevolve.process_parallel - INFO - Shutdown requested, canceling remaining evaluations...
+2026-05-04 21:54:13,475 - openevolve.process_parallel - INFO - ✅ Evolution completed - Shutdown requested
+2026-05-04 21:54:13,476 - openevolve.controller - INFO - Evolution stopped due to shutdown request
+2026-05-04 21:54:13,709 - openevolve.controller - INFO - Force exit requested - terminating immediately
+2026-05-04 21:54:13,709 - openevolve.controller - INFO - Force exit requested - terminating immediately
+2026-05-04 21:54:31,833 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 21:54:51,763 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 21:54:55,422 - openai._base_client - INFO - Retrying request to /chat/completions in 0.951226 seconds
+2026-05-04 21:55:34,013 - openevolve.controller - INFO - Force exit requested - terminating immediately
+2026-05-04 21:55:34,013 - openevolve.controller - INFO - Force exit requested - terminating immediately
+2026-05-04 21:55:34,017 - openevolve.llm.ensemble - INFO - Sampled model: swiss-ai/Apertus-70B-Instruct-2509
+2026-05-04 21:55:56,423 - openai._base_client - INFO - Retrying request to /chat/completions in 1.611315 seconds
+2026-05-04 21:56:34,060 - openai._base_client - INFO - Retrying request to /chat/completions in 0.482591 seconds
+2026-05-04 21:56:34,077 - openevolve.llm.openai - WARNING - Timeout on attempt 1/4. Retrying...
+2026-05-04 21:56:51,645 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 21:57:39,130 - openevolve.llm.openai - WARNING - Timeout on attempt 2/4. Retrying...
+2026-05-04 21:57:39,169 - openai._base_client - INFO - Retrying request to /chat/completions in 0.447463 seconds
+2026-05-04 21:58:39,190 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 21:58:44,140 - openevolve.llm.openai - WARNING - Timeout on attempt 3/4. Retrying...
+2026-05-04 21:58:44,223 - openai._base_client - INFO - Retrying request to /chat/completions in 0.470857 seconds
+2026-05-04 21:59:12,907 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 21:59:49,170 - openevolve.llm.openai - ERROR - All 4 attempts failed with timeout
+2026-05-04 21:59:49,231 - openai._base_client - INFO - Retrying request to /chat/completions in 0.452025 seconds
+2026-05-04 22:00:49,766 - openai._base_client - INFO - Retrying request to /chat/completions in 0.959307 seconds
+2026-05-04 22:01:50,810 - openai._base_client - INFO - Retrying request to /chat/completions in 1.953449 seconds
+2026-05-04 22:02:52,851 - openevolve.process_parallel - ERROR - LLM generation failed: 
+2026-05-04 22:02:52,851 - openevolve.llm.ensemble - INFO - Sampled model: swiss-ai/Apertus-70B-Instruct-2509
+2026-05-04 22:03:52,912 - openevolve.llm.openai - WARNING - Timeout on attempt 1/4. Retrying...
+2026-05-04 22:03:52,943 - openai._base_client - INFO - Retrying request to /chat/completions in 0.491352 seconds
+2026-05-04 22:04:53,504 - openai._base_client - INFO - Retrying request to /chat/completions in 0.868232 seconds
+2026-05-04 22:04:57,977 - openevolve.llm.openai - WARNING - Timeout on attempt 2/4. Retrying...
+2026-05-04 22:04:58,002 - openai._base_client - INFO - Retrying request to /chat/completions in 0.408445 seconds
+2026-05-04 22:05:54,061 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 22:05:58,493 - openai._base_client - INFO - Retrying request to /chat/completions in 0.807725 seconds
+2026-05-04 22:06:02,991 - openevolve.llm.openai - WARNING - Timeout on attempt 3/4. Retrying...
+2026-05-04 22:06:03,070 - openai._base_client - INFO - Retrying request to /chat/completions in 0.499973 seconds
+2026-05-04 22:06:46,455 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 22:06:59,384 - openai._base_client - INFO - Retrying request to /chat/completions in 1.584613 seconds
+2026-05-04 22:07:08,019 - openevolve.llm.openai - ERROR - All 4 attempts failed with timeout
+2026-05-04 22:07:08,080 - openai._base_client - INFO - Retrying request to /chat/completions in 0.388484 seconds
+2026-05-04 22:07:32,970 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 22:08:08,552 - openai._base_client - INFO - Retrying request to /chat/completions in 0.879060 seconds
+2026-05-04 22:09:09,523 - openai._base_client - INFO - Retrying request to /chat/completions in 1.619984 seconds
+2026-05-04 22:10:02,059 - httpx - INFO - HTTP Request: POST https://api.swissai.cscs.ch/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-04 22:10:02,066 - openevolve.process_parallel - ERROR - LLM generation failed: 
+2026-05-04 23:10:24,096 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-05-04 23:10:24,096 - openevolve.process_parallel - INFO - Graceful shutdown requested...
