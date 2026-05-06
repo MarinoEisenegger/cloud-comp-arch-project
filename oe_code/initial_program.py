@@ -1,13 +1,10 @@
 import subprocess, os, time, threading
 from queue import Queue
 import tempfile
-from matplotlib.pylab import delete
 import yaml
 
-OUTDIR = "part3_runs"
+OUTDIR = "oe_runs"
 
-# --- Job definitions: (job_name, yaml_file, preferred_node) ---
-# preferred_node hints which YAML variant to use, but all pull from same queue
 JOBS = {
     "parsec-barnes": {
         "image": "anakli/cca:splash2x_barnes",
@@ -47,7 +44,8 @@ JOBS = {
 }
 
 # -------------------------------------------------------------------
-CLIENT_MEASURE = "client-measure-nsc2"  # your actual node name
+CLIENT_MEASURE = "client-measure-s2md" # your actual node name
+#raise Exception("Please set CLIENT_MEASURE to your actual node name before running the script.") # Comment out after setting the correct node name
 SSH_KEY = "~/.ssh/cloud-computing"
 ZONE = "europe-west1-b"
 
@@ -185,25 +183,26 @@ def worker(worker_cfg):
 
 # EVOLVE-BLOCK-START
 class Scheduler:
-    """
-    Assign jobs to workers. Each worker_config entry must have:
-      node    : "node-a-8core" or "node-b-4core"
-      cores   : string like "0-3" or "4-7"
-      threads : int matching the number of cores in the range
-      jobs    : list of job names (subset of the 7 jobs below)
+    """ Jobs we have to run:
+    [
+    "freqmine", "streamcluster", "canneal", "blackscholes", "vips", "barnes", "radix"
+    ]
 
-    Available hardware:
-      node-a-8core : cores 0-7  (can split into multiple workers)
-      node-b-4core : cores 0-2  (core 3 is reserved for memcached!)
+    Cores we have available:
+    - node-a-8core: cores 0-7
+    - node-b-4core: cores 0-2 (3 is reserved for memcached)
 
-    All 7 jobs must appear exactly once across all workers:
-      freqmine, streamcluster, canneal, blackscholes, vips, barnes, radix
     """
     def __init__(self):
+        # Current config. Very simple, doesn't even use node b.
         self.worker_config = [
-            {"node": "node-a-8core", "cores": "0-3", "threads": 4, "jobs": ["freqmine", "blackscholes", "barnes"]},
-            {"node": "node-a-8core", "cores": "4-7", "threads": 4, "jobs": ["streamcluster", "radix"]},
-            {"node": "node-b-4core", "cores": "0-2", "threads": 3, "jobs": ["canneal", "vips"]},
+            {
+                "node": "node-a-8core",
+                "cores": "0-7",
+                "threads": 8,
+                "jobs": ["freqmine", "streamcluster", "canneal",
+                         "blackscholes", "vips", "barnes", "radix"]
+            }
         ]
 
     def run(self):
@@ -240,8 +239,7 @@ if __name__ == "__main__":
 
         subprocess.run(["python3", "get_time.py", f"{OUTDIR}/results_{RUN_ID}.json"], stdout=open(f"{OUTDIR}/timings_{RUN_ID}.txt", "w"))
 
-        for job_name in JOBS.keys():
-            delete_job(job_name)
+        subprocess.run(["kubectl", "delete", "jobs", "--all"]) 
 
         print(f"Results saved in {OUTDIR}/results_{RUN_ID}.json and {OUTDIR}/timings_{RUN_ID}.txt")
 

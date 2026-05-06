@@ -49,14 +49,14 @@ def evaluate(program_path: str) -> EvaluationResult:
     try:
         process = subprocess.run(
             ["uv", "run", program_path],
-            timeout=360,  # 6 minutes
+            timeout=480,  # 8 minutes
             capture_output=True,
             text=True
         )
     except subprocess.TimeoutExpired:
         return EvaluationResult(
             metrics={"combined_score": 0.0, "tail_latency": float('inf')},
-            artifacts={"error": "Timed out after 6 minutes", "timings": "No timings"}
+            artifacts={"error": "Timed out after 8 minutes", "timings": "No timings"}
         )
 
     if process.returncode != 0:
@@ -70,17 +70,17 @@ def evaluate(program_path: str) -> EvaluationResult:
     max_tail_latency = max_p95(f"{OUTDIR}/mcperf_1.txt")
 
 
-    time_score = max(0.0, 360 - total_time) / 360  # Normalize to [0,1], with a cap at 6 minutes (360 seconds)
+    time_score = max(0.0, 480 - total_time) / 480  # Normalize to [0,1], with a cap at 8 minutes (480 seconds)
 
     # Latency score: 1.0 at or below target, decays to 0 at threshold, negative beyond threshold
-    latency_score = max(-1.0, (1000 - max_tail_latency) / (1000 - 500))
+    latency_score = max(-1.0, (1000 - max_tail_latency) / (1000-300))
 
     if latency_score <= 0:
         # Hard penalty: latency is unacceptable, but score reflects how bad
-        combined_score = max(0.0, latency_score + 0.5) * 0.1
+        combined_score = max(0.0, latency_score) * 0.1
     else:
         # Both metrics contribute; latency is a multiplier on time
-        combined_score = time_score * (0.5 + 0.5 * latency_score)
+        combined_score = time_score + (0.1 * latency_score)
 
     return EvaluationResult(
         metrics={"combined_score": combined_score, "tail_latency": max_tail_latency},

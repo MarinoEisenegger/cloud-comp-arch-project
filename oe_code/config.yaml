@@ -5,7 +5,7 @@ checkpoint_interval: 1 # Do not change this
 
 llm:
   api_base: "https://api.swissai.cscs.ch/v1"
-  primary_model: "swiss-ai/Apertus-70B-Instruct-2509"
+  primary_model: "Qwen/Qwen3-Coder-30B-A3B-Instruct"
   top_p: 0.7 # Feel free to experiment with this value
   # Possible additional parameters to configure the LLM:
   # temperature: 
@@ -77,47 +77,48 @@ prompt:
       Threads → seconds: 1→105, 2→71 (1.48x), 4→41 (2.56x), 8→24 (4.38x)
       Interference:  cpu:1.72  l1d:1.85  l1i:1.80  l2:1.70  llc:1.89  memBW:1.84
 
-    INTERFERENCE NOTES
-    ------------------
-    When two jobs share a machine, the dominant shared resources are LLC and memBW.
-    Prefer pairing jobs with low LLC and memBW sensitivity together.
-    Jobs with high memBW interference are especially risky on machine b
-    (they degrade memcached latency). Avoid Streamcluster and Vips on machine b.
-    Canneal has relatively low interference — safer for machine b if needed.
-
     EVALUATION FEEDBACK
     -------------------
     You will receive:
-      - combined_score: float in [0,1], max(0, 360 - total_time) / 360
-                        Every second saved = +0.00278 score.
-                        Score is ZERO if tail latency exceeds 1000 µs at any point.
+      - combined_score: float in [0,1], computed as:
+
+          time_score    = max(0, 480 - total_time) / 480
+          latency_score = max(-1.0, (1000 - tail_latency) / 700)
+
+          if latency_score <= 0:   combined_score = max(0, latency_score) * 0.1
+          else:                    combined_score = time_score + (0.1 * latency_score)
+
       - tail_latency:   Worst-case p95 memcached latency in microseconds.
-      - error:          ALWAYS check this first. "Timed out after 6 minutes" = 0.
+      - error:          ALWAYS check this first. "Timed out after 8 minutes" = 0.
+      - time_score:     Raw time component before latency penalty (for debugging).
+      - latency_score:  Raw latency component (for debugging).
       - timings:        Per-job and total execution times.
 
     CURRENT BEST SCHEDULE (baseline — improve upon it)
     ---------------------------------------------------
-      Partition 1 — node-a, cores 0-3, 4 threads:  [freqmine, blackscholes, barnes]
-      Partition 2 — node-a, cores 4-7, 4 threads:  [streamcluster, radix]
-      Partition 3 — node-b, cores 0-2, 3 threads:  [canneal, vips]
+      Partition 1 — node-a, cores 0-7, 8 threads: [freqmine, streamcluster, canneal,
+                                                    blackscholes, vips, barnes, radix]
 
-    Estimated runtimes: partition 1 ≈ 211s, partition 2 ≈ 186s, partition 3 ≈ 175s
-    Bottleneck is partition 1 at ~211s.
+    Estimated sequential runtime with 8 threads:
+      freqmine=104s, streamcluster=109s, canneal=80s,
+      blackscholes=38s, vips=24s, barnes=28s, radix=9s → total ≈ 392s → score ≈ 0
+
+    This baseline is intentionally poor. The key insight to exploit is parallelism:
+    split jobs across multiple partitions that run simultaneously.
 
     OPTIMIZATION STRATEGY HINTS
     ----------------------------
-    - Freqmine (128s at 4t) is the longest single job and the bottleneck driver.
-      Giving it 8 threads on machine a alone cuts it to 104s.
-    - Streamcluster scales very well: 172s at 4t → 109s at 8t. Giving it all 8
-      cores of machine a as a solo partition is a strong candidate.
-    - Radix is very short (9-14s) and low-interference — pair it with heavier jobs
-      or run it last in a partition; it barely affects makespan.
-    - If Streamcluster takes all 8 cores of machine a, remaining jobs
-      (freqmine, blackscholes, barnes, radix, vips) must go to machine b (max 3
-      cores) or be split into sub-partitions on machine a before/after streamcluster
-      — but partitions run in PARALLEL not sequentially across machines, so think
-      carefully about which jobs share machine a in time.
-    - Avoid putting Streamcluster or Vips on machine b (high memBW → latency spike).
+    - The single biggest win is splitting jobs across partitions so they run in
+      parallel instead of sequentially. E.g. splitting node a into two 4-core partitions
+    - Streamcluster (109s at 8t) and Freqmine (104s at 8t) are the two heaviest jobs
+      — they should each be in their own partition if possible, not sequential.
+    - Machine b (cores 0-2, 3 threads) is free — use it. But not all jobs are suitable for b due to interference and memory bandwidth concerns.
+    - Radix also seems to timeout on machine b — avoid it there.
+    - Radix is very short (9s at 8t, 14s at 4t) — it barely affects makespan, pair
+      it with any heavy job and it will finish well before that job does.
+    - threads should exactly equal the number of cores in the range (e.g. cores "0-3"
+      → threads: 4)
+    - A good target: total wall-clock time under 240 (score > 0.33).
 
     CODE SCHEMA — your output must match this exactly
     -------------------------------------------------
@@ -134,8 +135,6 @@ prompt:
     Hard rules — any violation scores 0:
       ❌ All 7 jobs must appear exactly once: freqmine, streamcluster, canneal,
          blackscholes, vips, barnes, radix
-      ❌ threads must equal (end - start + 1)
-      ❌ Core ranges on the same node must not overlap
       ❌ node-b cores must stay within 0-2 (core 3 is reserved)
       ❌ Total cores used per node must not exceed: a→8, b→3
       ❌ Do not modify anything outside the Scheduler class
@@ -151,7 +150,7 @@ database:
 
 # Evaluator configuration
 evaluator:
-  timeout: 420
+  timeout: 600 # 10 minutes to allow for some overhead beyond the 8 minute program timeout
   cascade_evaluation: false
   parallel_evaluations: 1
 
